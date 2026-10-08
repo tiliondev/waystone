@@ -23,6 +23,10 @@ The folder is used in three ways:
 - An agent reads the instructions and performs the task itself, including for items that were not in the recording.
 - `waystone export` writes the steps as a Playwright or Puppeteer script. The script runs with those libraries alone; Waystone does not need to be installed.
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/tiliondev/waystone/main/docs/assets/demo-boarddocs.gif" alt="Recording a BoardDocs task, then replaying it" width="100%">
+</p>
+
 ## What it is used for
 
 - **Web scraping.** Record opening a listing, paging through results, opening each item. Replay it on a schedule.
