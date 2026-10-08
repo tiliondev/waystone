@@ -1,6 +1,6 @@
 {
   "name": "waystone-mcp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "MCP server for Waystone, the browser action recorder. Launches `waystone mcp` from a managed Python environment so clients can use `npx waystone-mcp` with nothing else installed.",
   "bin": { "waystone-mcp": "bin/waystone-mcp.js" },
   "files": ["bin/"],

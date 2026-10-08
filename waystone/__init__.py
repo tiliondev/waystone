@@ -11,7 +11,7 @@ from .recorder import Recorder
 from .replay import Replayer, ReplayResult, StepError
 from .workflow import Step, Target, Workflow
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 HOME_URL = os.environ.get("WAYSTONE_HOME", "https://www.google.com")
 __all__ = ["Waystone", "Engine", "Page", "Mark", "Marks", "NotFound", "Recorder", "Replayer", "ReplayResult", "StepError", "Workflow", "Step", "Target"]
 
