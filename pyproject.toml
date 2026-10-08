@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "waystone-browser"
+dynamic = ["version"]
+description = "Record a workflow once, mark the page for agents, replay anywhere. Stealth browser automation on top of Fortress."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Arman Luthra" }]
+keywords = ["browser-automation", "agents", "recorder", "playwright", "cdp", "fortress", "set-of-marks"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Topic :: Internet :: WWW/HTTP :: Browsers",
+  "Topic :: Software Development :: Testing",
+]
+dependencies = [
+  "numpy>=1.26",
+  "playwright>=1.49",
+  "pillow>=10.1",
+]
+
+[project.optional-dependencies]
+fortress = ["tilion-fortress>=153.0.8010.36"]   # default engine; `waystone --engine chrome` needs no extra
+mcp = ["mcp>=1.0"]
+dev = ["pytest>=8"]
+
+[project.scripts]
+waystone = "waystone.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/tiliondev/waystone"
+Engine = "https://github.com/tiliondev/fortress"
+
+[tool.hatch.version]
+path = "waystone/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["waystone", "tests", "examples", "AGENTS.md"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["waystone"]

@@ -1,0 +1,15 @@
+<!doctype html><html><head><title>Canvas app</title>
+<style>body{margin:0;font-family:sans-serif}#c{display:block;border:1px solid #ccc}#log{padding:8px}</style></head>
+<body><canvas id="c" width="640" height="360"></canvas><div id="log"></div>
+<script>
+const c = document.getElementById('c'), x = c.getContext('2d');
+const buttons = [{id:'save', x:40, y:40, w:140, h:48, bg:'#2a6', label:'Save'}, {id:'export', x:220, y:40, w:140, h:48, bg:'#26a', label:'Export'}, {id:'delete', x:400, y:40, w:140, h:48, bg:'#a33', label:'Delete'}];
+function draw(offset) {
+  x.fillStyle = '#fafafa'; x.fillRect(0, 0, 640, 360);
+  for (const b of buttons) { const bx = b.x + (offset || 0); x.fillStyle = b.bg; x.fillRect(bx, b.y, b.w, b.h); x.fillStyle = '#fff'; x.font = 'bold 20px sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText(b.label, bx + b.w / 2, b.y + b.h / 2); }
+  x.fillStyle = '#333'; x.font = '14px sans-serif'; x.textAlign = 'left'; x.fillText('Canvas toolbar (no DOM per button). Layout offset: ' + (offset || 0), 40, 300);
+}
+let offset = Number(new URLSearchParams(location.search).get('shift') || 0);
+draw(offset);
+c.addEventListener('click', (e) => { const r = c.getBoundingClientRect(); const px = e.clientX - r.left, py = e.clientY - r.top; const hit = buttons.find(b => px >= b.x + offset && px <= b.x + offset + b.w && py >= b.y && py <= b.y + b.h); document.getElementById('log').textContent = hit ? 'canvas:' + hit.id : 'canvas:miss'; });
+</script></body></html>

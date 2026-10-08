@@ -1,0 +1,69 @@
+<!doctype html>
+<html><head><title>Fixture</title>
+<style>
+  body { margin: 0; font-family: sans-serif; }
+  .sticky { position: sticky; top: 0; height: 60px; background: #333; color: #fff; z-index: 10; }
+  .menu { position: relative; display: inline-block; }
+  .menu .items { display: none; position: absolute; background: #eee; padding: 8px; }
+  .menu:hover .items { display: block; }
+  .card { cursor: pointer; width: 200px; padding: 10px; border: 1px solid #ccc; }
+  .spacer { height: 1200px; }
+  #covered-wrap { position: relative; }
+  #cover { position: absolute; inset: 0; background: rgba(255,0,0,.3); }
+</style></head>
+<body>
+  <div class="sticky">header</div>
+  <nav><a href="/home">Home</a><a href="/about">About</a></nav>
+
+  <form id="f">
+    <label for="email">Email</label><input id="email" name="email" type="email" placeholder="you@example.com">
+    <label>Password <input name="pw" type="password" autocomplete="current-password"></label>
+    <select name="plan"><option value="free">Free</option><option value="pro">Pro</option></select>
+    <input type="checkbox" name="tos" id="tos"><label for="tos">I agree</label>
+    <input type="range" name="vol" min="0" max="10" value="3">
+    <input type="file" name="doc" id="doc">
+    <button type="submit" data-testid="submit-btn">Sign in</button>
+  </form>
+
+  <div class="menu" id="menu"><span tabindex="0">Products</span>
+    <div class="items"><a href="/p/1" id="hidden-item">Widgets</a></div>
+  </div>
+
+  <div class="card" id="card"><h3>Card title</h3><p>Body text</p></div>
+
+  <div id="react-root"><button class="css-1x2y3z" aria-label="Close dialog">×</button></div>
+  <div style="display:none"><button>Hidden</button></div>
+  <a href="/card"><h3>Nested link title</h3><p>Body</p></a>
+
+  <section id="big" tabindex="0" style="height:400px;background:#fafafa"><p>Some text in a huge focusable section</p></section>
+
+  <my-widget id="widget"></my-widget>
+  <script>
+    customElements.define('my-widget', class extends HTMLElement {
+      constructor() { super(); const r = this.attachShadow({mode:'open'}); r.innerHTML = '<button id="inner">Shadow button</button>'; }
+    });
+  </script>
+
+  <iframe id="frame" srcdoc="<button id='fbtn'>Frame button</button>" style="width:300px;height:80px"></iframe>
+
+  <div id="covered-wrap"><button id="covered">Covered button</button><div id="cover"></div></div>
+
+  <div class="spacer"></div>
+  <button id="far">Far below</button>
+  <a id="pop" href="popup.html" target="_blank">Open popup</a>
+  <div id="log"></div>
+  <script>
+    document.getElementById('far').addEventListener('click', () => { document.getElementById('log').textContent = 'far-clicked'; });
+    document.getElementById('covered').addEventListener('click', () => { document.getElementById('log').textContent = 'covered-clicked'; });
+    document.getElementById('card').addEventListener('click', () => { document.getElementById('log').textContent = 'card-clicked'; });
+    document.getElementById('hidden-item').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('log').textContent = 'widgets-clicked'; });
+    document.getElementById('f').addEventListener('submit', (e) => e.preventDefault());
+  </script>
+</body></html>
+<script>
+  // closed shadow root: nothing outside can reach #secret via querySelector
+  customElements.define('closed-widget', class extends HTMLElement {
+    constructor() { super(); const r = this.attachShadow({mode:'closed'}); r.innerHTML = '<button id="secret">Closed button</button>'; r.getElementById('secret').addEventListener('click', () => { document.getElementById('log').textContent = 'closed-clicked'; }); }
+  });
+  const cw = document.createElement('closed-widget'); cw.id = 'closedw'; document.body.appendChild(cw);
+</script>

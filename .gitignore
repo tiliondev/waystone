@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+*_steps/
+*.json
+!package.json
+marks.png
+waystone-failure.png
+out/
+.DS_Store
+dev/
+bench/

@@ -1,0 +1,20 @@
+<!doctype html><html><head><title>Canvas grid</title>
+<style>body{margin:0;font-family:sans-serif}#c{display:block}#log{padding:8px}</style></head>
+<body><canvas id="c" width="900" height="420"></canvas><div id="log"></div>
+<script>
+// A spreadsheet-like grid: 8 cols x 12 rows, identical cells, row/col headers. ?scroll=N hides the
+// first N rows (as if the user scrolled the sheet); ?shift=N moves the whole grid N px right.
+const c = document.getElementById('c'), x = c.getContext('2d');
+const q = new URLSearchParams(location.search); const scroll = +(q.get('scroll') || 0), shift = +(q.get('shift') || 0);
+const COLS = 8, ROWS = 12, CW = 100, RH = 28, OX = 60 + shift, OY = 40;
+const data = (r, c) => (r * 7 + c * 3) % 97;
+function draw() {
+  x.fillStyle = '#fff'; x.fillRect(0, 0, 900, 420);
+  x.font = '13px sans-serif'; x.textBaseline = 'middle';
+  for (let ci = 0; ci < COLS; ci++) { x.fillStyle = '#eef'; x.fillRect(OX + ci * CW, OY - RH, CW, RH); x.strokeStyle = '#99a'; x.strokeRect(OX + ci * CW, OY - RH, CW, RH); x.fillStyle = '#334'; x.textAlign = 'center'; x.fillText(String.fromCharCode(65 + ci), OX + ci * CW + CW / 2, OY - RH / 2); }
+  for (let ri = 0; ri < ROWS; ri++) { const r = ri + scroll; x.fillStyle = '#eef'; x.fillRect(OX - 60, OY + ri * RH, 60, RH); x.strokeRect(OX - 60, OY + ri * RH, 60, RH); x.fillStyle = '#334'; x.textAlign = 'center'; x.fillText(String(r + 1), OX - 30, OY + ri * RH + RH / 2);
+    for (let ci = 0; ci < COLS; ci++) { x.fillStyle = '#fff'; x.fillRect(OX + ci * CW, OY + ri * RH, CW, RH); x.strokeStyle = '#ccd'; x.strokeRect(OX + ci * CW, OY + ri * RH, CW, RH); x.fillStyle = '#222'; x.textAlign = 'right'; x.fillText(String(data(r, ci)), OX + ci * CW + CW - 8, OY + ri * RH + RH / 2); } }
+}
+draw();
+c.addEventListener('click', (e) => { const b = c.getBoundingClientRect(); const px = e.clientX - b.left, py = e.clientY - b.top; const ci = Math.floor((px - OX) / CW), ri = Math.floor((py - OY) / RH); document.getElementById('log').textContent = (ci >= 0 && ci < COLS && ri >= 0 && ri < ROWS) ? 'cell:' + String.fromCharCode(65 + ci) + (ri + scroll + 1) : 'miss'; });
+</script></body></html>
