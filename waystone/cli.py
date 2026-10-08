@@ -22,7 +22,22 @@ def _kv(pairs: list[str]) -> dict[str, str]:
     return out
 
 
+def _default_name(url: str | None, out_dir: str) -> str:
+    """Folder name from the site: go.boarddocs.com -> boarddocs; -2, -3 if taken."""
+    from urllib.parse import urlparse
+
+    host = (urlparse(url or HOME_URL).hostname or "recording").lower()
+    parts = [p for p in host.split(".") if p not in ("www", "go", "app", "m")]
+    base = parts[-2] if len(parts) >= 2 else (parts[0] if parts else "recording")
+    name, n = base, 2
+    while (Path(out_dir) / name).exists():
+        name, n = f"{base}-{n}", n + 1
+    return name
+
+
 def cmd_record(a: argparse.Namespace) -> int:
+    if not a.name:
+        a.name = _default_name(a.url, a.out)
     with Waystone(a.cdp, engine=a.engine, headless=False, profile=a.profile) as ws:
         print(f"engine {ws.engine.version} @ {ws.engine.cdp_url}")
         what = f"the open tab matching '{a.attach}'" if a.attach else (a.url or HOME_URL)
@@ -105,7 +120,8 @@ def cmd_export(a: argparse.Namespace) -> int:
     if a.out == "-":
         print(text)
         return 0
-    out = Path(a.out) if a.out else Path(a.workflow).with_suffix("").with_name(wf.name + ext(a.format))
+    src = Path(a.workflow)
+    out = Path(a.out) if a.out else (src if src.is_dir() else src.parent) / (wf.name + ext(a.format))
     out.write_text(text, encoding="utf-8")
     print(out)
     return 0
@@ -155,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
 
     r = sub.add_parser("record", help="record a human session into a workflow")
     r.add_argument("url", nargs="?", help=f"start url (default: {HOME_URL}, or $WAYSTONE_HOME)")
-    r.add_argument("-n", "--name", default="workflow")
+    r.add_argument("-n", "--name", default=None, help="folder name (default: the site, e.g. boarddocs)")
     r.add_argument("-o", "--out", default=".", help="output directory")
     r.add_argument("--attach", metavar="URL_SUBSTR", help="record an already-open tab instead of opening a new one")
     r.add_argument("--no-video", action="store_true")
@@ -188,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
     m.set_defaults(fn=cmd_mark)
 
     e = sub.add_parser("export", help="agent brief or a Playwright / Puppeteer script from a workflow")
-    e.add_argument("workflow")
+    e.add_argument("workflow", help="automation folder (or a workflow json)")
     e.add_argument("-f", "--format", choices=FORMATS, default="agent")
     e.add_argument("-o", "--out", default=None, help="output file ('-' for stdout; default: next to the workflow)")
     e.set_defaults(fn=cmd_export)
